@@ -1,0 +1,114 @@
+.meetups-content {
+  margin-left: 240px;
+  padding: 40px;
+  min-height: 100vh;
+  background-color: #050505;
+}
+
+.meetups-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meetups-header h1 {
+  color: white;
+  font-size: 30px;
+  margin: 0;
+}
+
+.meetups-header p {
+  color: #777777;
+  margin-top: 8px;
+}
+
+.meetups-header input {
+  width: 270px;
+  height: 45px;
+
+  background-color: #111111;
+  color: white;
+
+  border: 1px solid #292929;
+  border-radius: 8px;
+
+  padding: 0 15px;
+  outline: none;
+}
+
+.meetups-header input:focus {
+  border-color: #39ff14;
+}
+
+.meetups-table-container {
+  margin-top: 35px;
+
+  background-color: #0d0d0d;
+
+  border: 1px solid #242424;
+  border-radius: 12px;
+
+  overflow-x: auto;
+}
+
+.meetups-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.meetups-table-container th {
+  color: #999999;
+  font-size: 13px;
+  text-align: left;
+
+  padding: 18px;
+
+  border-bottom: 1px solid #242424;
+}
+
+.meetups-table-container td {
+  color: #dddddd;
+  font-size: 14px;
+
+  padding: 18px;
+
+  border-bottom: 1px solid #1c1c1c;
+}
+
+.meetup-title {
+  color: #39ff14 !important;
+  font-weight: bold;
+}
+
+.meetup-status {
+  background-color: #151515;
+
+  border: 1px solid #303030;
+  border-radius: 20px;
+
+  padding: 6px 10px;
+
+  font-size: 12px;
+}
+
+.delete-meetup-button {
+  background-color: transparent;
+  color: #ff5757;
+
+  border: 1px solid #ff5757;
+  border-radius: 6px;
+
+  padding: 7px 12px;
+
+  cursor: pointer;
+}
+
+.delete-meetup-button:hover {
+  background-color: #ff5757;
+  color: white;
+}
+
+.meetups-error {
+  color: #ff5757;
+  margin-top: 25px;
+}

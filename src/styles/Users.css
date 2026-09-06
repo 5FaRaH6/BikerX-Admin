@@ -1,0 +1,100 @@
+.users-content {
+  margin-left: 240px;
+  padding: 40px;
+  min-height: 100vh;
+  background-color: #050505;
+}
+
+.users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.users-header h1 {
+  color: white;
+  font-size: 30px;
+  margin: 0;
+}
+
+.users-header p {
+  color: #777777;
+  margin-top: 8px;
+}
+
+.users-header input {
+  width: 260px;
+  height: 45px;
+
+  background-color: #111111;
+  color: white;
+
+  border: 1px solid #292929;
+  border-radius: 8px;
+
+  padding: 0 15px;
+  outline: none;
+}
+
+.users-header input:focus {
+  border-color: #39ff14;
+}
+
+.users-table-container {
+  margin-top: 35px;
+
+  background-color: #0d0d0d;
+
+  border: 1px solid #242424;
+  border-radius: 12px;
+
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  color: #999999;
+  font-size: 13px;
+  text-align: left;
+
+  padding: 18px;
+  border-bottom: 1px solid #242424;
+}
+
+td {
+  color: #dddddd;
+  font-size: 14px;
+
+  padding: 18px;
+  border-bottom: 1px solid #1c1c1c;
+}
+
+.username {
+  color: #39ff14;
+}
+
+.delete-user-button {
+  background-color: transparent;
+  color: #ff5757;
+
+  border: 1px solid #ff5757;
+  border-radius: 6px;
+
+  padding: 7px 12px;
+
+  cursor: pointer;
+}
+
+.delete-user-button:hover {
+  background-color: #ff5757;
+  color: white;
+}
+
+.users-error {
+  color: #ff5757;
+  margin-top: 25px;
+}
