@@ -80,6 +80,36 @@ function Reports() {
       setError('Could not connect to the server.');
     }
   }
+  async function deleteComment(commentId, reportId) {
+  try {
+    const token = localStorage.getItem('adminToken');
+
+    const response = await fetch(
+      `${API_URL}/Admin/comments/${commentId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (handleUnauthorized(response)) return;
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.message || 'Could not delete comment.');
+      return;
+    }
+
+    await updateStatus(reportId, 'Resolved');
+  }
+  catch (error) {
+    console.log(error);
+    setError('Could not connect to the server.');
+  }
+}
 
   const filteredReports = reports.filter(report => {
     if (filter === 'All') return true;
@@ -120,7 +150,11 @@ function Reports() {
                   <h3>{report.reason}</h3>
 
                   <p className="report-type">
-                    {report.postId ? 'Reported Post' : 'Reported Meetup'}
+                  {report.commentId
+                  ? 'Reported Comment'
+                  : report.postId
+                  ? 'Reported Post'
+                  : 'Reported Meetup'}
                   </p>
                 </div>
 
@@ -149,6 +183,10 @@ function Reports() {
                   <span>Meetup ID: {report.meetupId}</span>
                 )}
 
+                {report.commentId && (
+                  <span>Comment ID: {report.commentId}</span>
+                )}
+
                 <span>
                   {new Date(report.createdAt).toLocaleString()}
                 </span>
@@ -156,6 +194,16 @@ function Reports() {
 
               {report.status === 'Pending' && (
                 <div className="report-actions">
+                  {report.commentId && (
+  <button
+    className="delete-button"
+    onClick={() =>
+      deleteComment(report.commentId, report.reportId)
+    }
+  >
+    Delete Comment
+  </button>
+)}
                   <button
                     className="resolve-button"
                     onClick={() => updateStatus(report.reportId, 'Resolved')}

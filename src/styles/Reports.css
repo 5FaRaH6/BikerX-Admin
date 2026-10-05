@@ -158,3 +158,15 @@
   color: #ff5757;
   margin-top: 25px;
 }
+.delete-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #e63b3b;
+}
