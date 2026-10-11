@@ -6,6 +6,7 @@ import Users from './pages/Users';
 import Posts from './pages/Posts';
 import Meetups from './pages/Meetups';
 import Reports from './pages/Reports';
+import BikeModels from './pages/BikeModels';
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('adminToken');
@@ -58,6 +59,11 @@ function App() {
         <Route
           path="/reports"
           element={<ProtectedRoute><Reports /></ProtectedRoute>}
+        />
+
+        <Route
+         path="/bike-models"
+         element={<ProtectedRoute><BikeModels /></ProtectedRoute>}
         />
 
       </Routes>

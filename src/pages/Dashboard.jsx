@@ -164,6 +164,10 @@ function Dashboard() {
               <button onClick={() => navigate('/reports')}>
                 Review Reports
               </button>
+
+              <button onClick={() => navigate('/bike-models')}>
+                Manage 3D Bikes
+              </button>
             </div>
           </div>
 

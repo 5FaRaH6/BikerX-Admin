@@ -1,0 +1,149 @@
+.bike-models-content {
+  margin-left: 240px;
+  padding: 40px;
+  min-height: 100vh;
+  background-color: #050505;
+}
+
+.bike-models-header h1 {
+  color: white;
+  font-size: 30px;
+  margin: 0;
+}
+
+.bike-models-header p {
+  color: #777;
+  margin-top: 8px;
+}
+
+.bike-models-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-top: 35px;
+}
+
+.bike-model-form-card,
+.bike-model-list-card {
+  background-color: #0d0d0d;
+  border: 1px solid #242424;
+  border-radius: 12px;
+  padding: 25px;
+}
+
+.bike-model-form-card h2,
+.bike-model-list-card h2 {
+  color: white;
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+.bike-model-form-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.bike-model-form-card label {
+  color: #aaa;
+  font-size: 14px;
+  margin-bottom: 7px;
+}
+
+.bike-model-form-card input {
+  height: 45px;
+  background-color: #151515;
+  color: white;
+
+  border: 1px solid #292929;
+  border-radius: 8px;
+
+  padding: 0 12px;
+
+  margin-bottom: 18px;
+
+  outline: none;
+}
+
+.bike-model-form-card input:focus {
+  border-color: #39ff14;
+}
+
+.bike-model-form-card button {
+  height: 48px;
+
+  background-color: #39ff14;
+  color: #050505;
+
+  border: none;
+  border-radius: 8px;
+
+  font-weight: bold;
+  cursor: pointer;
+
+  margin-top: 5px;
+}
+
+.bike-model-form-card button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.bike-model-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bike-model-item {
+  background-color: #151515;
+  border: 1px solid #292929;
+  border-radius: 8px;
+
+  padding: 16px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bike-model-item h3 {
+  color: white;
+  margin: 0;
+  font-size: 16px;
+}
+
+.bike-model-item p {
+  color: #888;
+  margin: 7px 0 0;
+}
+
+.bike-model-item span {
+  color: #39ff14;
+  border: 1px solid #39ff14;
+  border-radius: 6px;
+
+  padding: 5px 9px;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.bike-model-error {
+  color: #ff5757;
+  margin-top: 0;
+}
+
+.bike-model-success {
+  color: #39ff14;
+  margin-top: 0;
+}
+
+.no-models {
+  color: #777;
+}
+
+@media (max-width: 1000px) {
+  .bike-models-grid {
+    grid-template-columns: 1fr;
+  }
+}

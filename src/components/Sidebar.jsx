@@ -22,6 +22,7 @@ function Sidebar() {
         <NavLink to="/posts">Posts</NavLink>
         <NavLink to="/meetups">Meetups</NavLink>
         <NavLink to="/reports">Reports</NavLink>
+        <NavLink to="/bike-models">3D Bikes</NavLink>
       </div>
 
       <button className="logout-button" onClick={logout}>
