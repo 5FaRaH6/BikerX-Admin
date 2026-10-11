@@ -19,11 +19,14 @@ function Reports() {
     try {
       const token = localStorage.getItem('adminToken');
 
-      const response = await fetch(`${API_URL}/Admin/reports`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${API_URL}/Admin/reports`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (handleUnauthorized(response)) return;
 
@@ -63,12 +66,15 @@ function Reports() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || 'Could not update report.');
+        setError(
+          data.message ||
+          'Could not update report.'
+        );
         return;
       }
 
-      setReports(
-        reports.map(report =>
+      setReports(currentReports =>
+        currentReports.map(report =>
           report.reportId === reportId
             ? { ...report, status }
             : report
@@ -80,89 +86,196 @@ function Reports() {
       setError('Could not connect to the server.');
     }
   }
-  async function deleteComment(commentId, reportId) {
-  try {
-    const token = localStorage.getItem('adminToken');
 
-    const response = await fetch(
-      `${API_URL}/Admin/comments/${commentId}`,
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+  async function deleteReportedContent(report) {
+    let endpoint = '';
+    let contentName = '';
 
-    if (handleUnauthorized(response)) return;
+    if (report.commentId) {
+      endpoint =
+        `${API_URL}/Admin/comments/${report.commentId}`;
 
-    const data = await response.json();
+      contentName = 'comment';
+    }
+    else if (report.postId) {
+      endpoint =
+        `${API_URL}/Admin/posts/${report.postId}`;
 
-    if (!response.ok) {
-      setError(data.message || 'Could not delete comment.');
+      contentName = 'post';
+    }
+    else if (report.meetupId) {
+      endpoint =
+        `${API_URL}/Admin/meetups/${report.meetupId}`;
+
+      contentName = 'meetup';
+    }
+    else {
+      setError('Reported content was not found.');
       return;
     }
 
-    await updateStatus(reportId, 'Resolved');
-  }
-  catch (error) {
-    console.log(error);
-    setError('Could not connect to the server.');
-  }
-}
+    const confirmed = window.confirm(
+      `Are you sure you want to delete this ${contentName}?`
+    );
 
-  const filteredReports = reports.filter(report => {
-    if (filter === 'All') return true;
+    if (!confirmed) {
+      return;
+    }
 
-    return report.status === filter;
-  });
+    try {
+      setError('');
+
+      const token =
+        localStorage.getItem('adminToken');
+
+      const response = await fetch(
+        endpoint,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (handleUnauthorized(response)) return;
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(
+          data.message ||
+          `Could not delete ${contentName}.`
+        );
+
+        return;
+      }
+
+      await updateStatus(
+        report.reportId,
+        'Resolved'
+      );
+    }
+    catch (error) {
+      console.log(error);
+
+      setError(
+        'Could not connect to the server.'
+      );
+    }
+  }
+
+  function getReportType(report) {
+    if (report.commentId) {
+      return 'Reported Comment';
+    }
+
+    if (report.postId) {
+      return 'Reported Post';
+    }
+
+    if (report.meetupId) {
+      return 'Reported Meetup';
+    }
+
+    return 'Reported Content';
+  }
+
+  function getDeleteButtonText(report) {
+    if (report.commentId) {
+      return 'Delete Comment';
+    }
+
+    if (report.postId) {
+      return 'Delete Post';
+    }
+
+    if (report.meetupId) {
+      return 'Delete Meetup';
+    }
+
+    return 'Delete Content';
+  }
+
+  const filteredReports = reports.filter(
+    report => {
+      if (filter === 'All') {
+        return true;
+      }
+
+      return report.status === filter;
+    }
+  );
 
   return (
     <div className="admin-layout">
       <Sidebar />
 
       <main className="reports-content">
+
         <div className="reports-header">
           <div>
             <h1>Reports</h1>
+
             <p>Review reported content</p>
           </div>
 
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            onChange={(event) =>
+              setFilter(event.target.value)
+            }
           >
-            <option value="All">All Reports</option>
-            <option value="Pending">Pending</option>
-            <option value="Resolved">Resolved</option>
-            <option value="Rejected">Rejected</option>
+            <option value="All">
+              All Reports
+            </option>
+
+            <option value="Pending">
+              Pending
+            </option>
+
+            <option value="Resolved">
+              Resolved
+            </option>
+
+            <option value="Rejected">
+              Rejected
+            </option>
           </select>
         </div>
 
-        {error && <p className="reports-error">{error}</p>}
+        {error && (
+          <p className="reports-error">
+            {error}
+          </p>
+        )}
 
         <div className="reports-list">
+
           {filteredReports.map(report => (
-            <div className="report-item" key={report.reportId}>
+            <div
+              className="report-item"
+              key={report.reportId}
+            >
 
               <div className="report-top">
+
                 <div>
                   <h3>{report.reason}</h3>
 
                   <p className="report-type">
-                  {report.commentId
-                  ? 'Reported Comment'
-                  : report.postId
-                  ? 'Reported Post'
-                  : 'Reported Meetup'}
+                    {getReportType(report)}
                   </p>
                 </div>
 
                 <span
-                  className={`report-status ${report.status.toLowerCase()}`}
+                  className={
+                    `report-status ${report.status.toLowerCase()}`
+                  }
                 >
                   {report.status}
                 </span>
+
               </div>
 
               {report.description && (
@@ -172,57 +285,93 @@ function Reports() {
               )}
 
               <div className="report-info">
-                <span>Report ID: {report.reportId}</span>
-                <span>User ID: {report.userId}</span>
+
+                <span>
+                  Report ID: {report.reportId}
+                </span>
+
+                <span>
+                  User ID: {report.userId}
+                </span>
 
                 {report.postId && (
-                  <span>Post ID: {report.postId}</span>
+                  <span>
+                    Post ID: {report.postId}
+                  </span>
                 )}
 
                 {report.meetupId && (
-                  <span>Meetup ID: {report.meetupId}</span>
+                  <span>
+                    Meetup ID: {report.meetupId}
+                  </span>
                 )}
 
                 {report.commentId && (
-                  <span>Comment ID: {report.commentId}</span>
+                  <span>
+                    Comment ID: {report.commentId}
+                  </span>
                 )}
 
                 <span>
-                  {new Date(report.createdAt).toLocaleString()}
+                  {new Date(
+                    report.createdAt
+                  ).toLocaleString()}
                 </span>
+
               </div>
 
               {report.status === 'Pending' && (
                 <div className="report-actions">
-                  {report.commentId && (
-  <button
-    className="delete-button"
-    onClick={() =>
-      deleteComment(report.commentId, report.reportId)
-    }
-  >
-    Delete Comment
-  </button>
-)}
+
+                  {(report.commentId ||
+                    report.postId ||
+                    report.meetupId) && (
+                    <button
+                      className="delete-button"
+                      onClick={() =>
+                        deleteReportedContent(
+                          report
+                        )
+                      }
+                    >
+                      {getDeleteButtonText(
+                        report
+                      )}
+                    </button>
+                  )}
+
                   <button
                     className="resolve-button"
-                    onClick={() => updateStatus(report.reportId, 'Resolved')}
+                    onClick={() =>
+                      updateStatus(
+                        report.reportId,
+                        'Resolved'
+                      )
+                    }
                   >
                     Resolve
                   </button>
 
                   <button
                     className="reject-button"
-                    onClick={() => updateStatus(report.reportId, 'Rejected')}
+                    onClick={() =>
+                      updateStatus(
+                        report.reportId,
+                        'Rejected'
+                      )
+                    }
                   >
                     Reject
                   </button>
+
                 </div>
               )}
 
             </div>
           ))}
+
         </div>
+
       </main>
     </div>
   );
