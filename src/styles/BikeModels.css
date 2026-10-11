@@ -147,3 +147,64 @@
     grid-template-columns: 1fr;
   }
 }
+
+.bike-model-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.model-3d-badge {
+  color: #39ff14;
+  border: 1px solid #39ff14;
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.edit-model-button,
+.delete-model-button {
+  height: 34px;
+  padding: 0 12px;
+
+  background-color: transparent;
+  border-radius: 6px;
+
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.edit-model-button {
+  color: #39ff14;
+  border: 1px solid #39ff14;
+}
+
+.edit-model-button:hover {
+  background-color: #39ff14;
+  color: #050505;
+}
+
+.delete-model-button {
+  color: #ff5757;
+  border: 1px solid #ff5757;
+}
+
+.delete-model-button:hover {
+  background-color: #ff5757;
+  color: white;
+}
+
+.cancel-edit-button {
+  background-color: transparent !important;
+  color: #aaaaaa !important;
+
+  border: 1px solid #333333 !important;
+
+  margin-top: 10px !important;
+}
+
+.cancel-edit-button:hover {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+}

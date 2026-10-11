@@ -14,6 +14,8 @@ function BikeModels() {
   const [year, setYear] = useState('');
   const [modelUrl, setModelUrl] = useState('');
 
+  const [editingId, setEditingId] = useState(null);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,7 +54,32 @@ function BikeModels() {
     }
   }
 
-  async function addModel(event) {
+  function clearForm() {
+    setBrand('');
+    setModel('');
+    setYear('');
+    setModelUrl('');
+    setEditingId(null);
+  }
+
+  function startEdit(bike) {
+    setEditingId(bike.model3DId);
+
+    setBrand(bike.brand);
+    setModel(bike.model);
+    setYear(String(bike.year));
+    setModelUrl(bike.modelUrl);
+
+    setError('');
+    setSuccess('');
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  }
+
+  async function saveModel(event) {
     event.preventDefault();
 
     setError('');
@@ -73,22 +100,96 @@ function BikeModels() {
 
       const token = localStorage.getItem('adminToken');
 
+      const url = editingId
+        ? `${API_URL}/Admin/bike-models/${editingId}`
+        : `${API_URL}/Admin/bike-models`;
+
+      const response = await fetch(url, {
+        method: editingId ? 'PUT' : 'POST',
+
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify({
+          brand: brand.trim(),
+          model: model.trim(),
+          year: Number(year),
+          modelUrl: modelUrl.trim(),
+        }),
+      });
+
+      if (handleUnauthorized(response)) return;
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(
+          data?.message ||
+          'Could not save 3D bike model.'
+        );
+        return;
+      }
+
+      if (editingId) {
+        setModels(currentModels =>
+          currentModels.map(item =>
+            item.model3DId === editingId
+              ? data
+              : item
+          )
+        );
+
+        setSuccess(
+          '3D bike model updated successfully.'
+        );
+      }
+      else {
+        setModels(currentModels => [
+          ...currentModels,
+          data,
+        ]);
+
+        setSuccess(
+          '3D bike model added successfully.'
+        );
+      }
+
+      clearForm();
+    }
+    catch (error) {
+      console.log(error);
+      setError('Could not connect to the server.');
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteModel(bike) {
+    const confirmed = window.confirm(
+      `Delete ${bike.brand} ${bike.model}?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError('');
+      setSuccess('');
+
+      const token = localStorage.getItem('adminToken');
+
       const response = await fetch(
-        `${API_URL}/Admin/bike-models`,
+        `${API_URL}/Admin/bike-models/${bike.model3DId}`,
         {
-          method: 'POST',
+          method: 'DELETE',
 
           headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-
-          body: JSON.stringify({
-            brand: brand.trim(),
-            model: model.trim(),
-            year: Number(year),
-            modelUrl: modelUrl.trim(),
-          }),
         }
       );
 
@@ -98,29 +199,33 @@ function BikeModels() {
 
       if (!response.ok) {
         setError(
-          data?.message || 'Could not add 3D bike model.'
+          data?.message ||
+          'Could not delete 3D bike model.'
         );
         return;
       }
 
-      setModels(currentModels => [
-        ...currentModels,
-        data,
-      ]);
+      setModels(currentModels =>
+        currentModels.filter(
+          item =>
+            item.model3DId !== bike.model3DId
+        )
+      );
 
-      setBrand('');
-      setModel('');
-      setYear('');
-      setModelUrl('');
+      if (editingId === bike.model3DId) {
+        clearForm();
+      }
 
-      setSuccess('3D bike model added successfully.');
+      setSuccess(
+        '3D bike model deleted successfully.'
+      );
     }
     catch (error) {
       console.log(error);
-      setError('Could not connect to the server.');
-    }
-    finally {
-      setLoading(false);
+
+      setError(
+        'Could not connect to the server.'
+      );
     }
   }
 
@@ -132,16 +237,23 @@ function BikeModels() {
 
         <div className="bike-models-header">
           <h1>3D Bikes</h1>
-          <p>Manage the available 3D bike models</p>
+
+          <p>
+            Manage the available 3D bike models
+          </p>
         </div>
 
         <div className="bike-models-grid">
 
           <div className="bike-model-form-card">
 
-            <h2>Add 3D Bike</h2>
+            <h2>
+              {editingId
+                ? 'Edit 3D Bike'
+                : 'Add 3D Bike'}
+            </h2>
 
-            <form onSubmit={addModel}>
+            <form onSubmit={saveModel}>
 
               <label>Brand</label>
 
@@ -158,7 +270,7 @@ function BikeModels() {
 
               <input
                 type="text"
-                placeholder="Example: YZF-R1"
+                placeholder="Example: YZF-R3"
                 value={model}
                 onChange={event =>
                   setModel(event.target.value)
@@ -169,7 +281,7 @@ function BikeModels() {
 
               <input
                 type="number"
-                placeholder="Example: 2025"
+                placeholder="Example: 2019"
                 value={year}
                 onChange={event =>
                   setYear(event.target.value)
@@ -204,9 +316,21 @@ function BikeModels() {
                 disabled={loading}
               >
                 {loading
-                  ? 'Adding...'
-                  : 'Add Bike Model'}
+                  ? 'Saving...'
+                  : editingId
+                    ? 'Save Changes'
+                    : 'Add Bike Model'}
               </button>
+
+              {editingId && (
+                <button
+                  type="button"
+                  className="cancel-edit-button"
+                  onClick={clearForm}
+                >
+                  Cancel Edit
+                </button>
+              )}
 
             </form>
 
@@ -229,7 +353,7 @@ function BikeModels() {
                     key={bike.model3DId}
                   >
 
-                    <div>
+                    <div className="bike-model-info">
                       <h3>
                         {bike.brand} {bike.model}
                       </h3>
@@ -237,7 +361,31 @@ function BikeModels() {
                       <p>{bike.year}</p>
                     </div>
 
-                    <span>3D</span>
+                    <div className="bike-model-actions">
+
+                      <span className="model-3d-badge">
+                        3D
+                      </span>
+
+                      <button
+                        className="edit-model-button"
+                        onClick={() =>
+                          startEdit(bike)
+                        }
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className="delete-model-button"
+                        onClick={() =>
+                          deleteModel(bike)
+                        }
+                      >
+                        Delete
+                      </button>
+
+                    </div>
 
                   </div>
                 ))}
